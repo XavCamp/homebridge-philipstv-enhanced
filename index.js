@@ -122,39 +122,39 @@ function HttpStatusAccessory(log, config) {
             }
         });
 
-        var statusemitter_volume = pollingtoevent(function(done) {
-            that.getVolumeState(function(error, response) {
-                done(error, response, that.set_attempt);
-            }, "statuspoll");
-        }, {
-            longpolling: true,
-            interval: that.interval * 1000,
-            longpollEventName: "statuspoll_volume"
-        });
+        // var statusemitter_volume = pollingtoevent(function(done) {
+        //     that.getVolumeState(function(error, response) {
+        //         done(error, response, that.set_attempt);
+        //     }, "statuspoll");
+        // }, {
+        //     longpolling: true,
+        //     interval: that.interval * 1000,
+        //     longpollEventName: "statuspoll_volume"
+        // });
 
-        statusemitter.on("statuspoll_volume", function(data) {
-            that.state_volume = data;
-            if (that.VolumeService) {
-                that.VolumeService.getCharacteristic(Characteristic.On).setValue(that.state_volume, null, "statuspoll");
-            }
-        });
+        // statusemitter.on("statuspoll_volume", function(data) {
+        //     that.state_volume = data;
+        //     if (that.VolumeService) {
+        //         that.VolumeService.getCharacteristic(Characteristic.On).setValue(that.state_volume, null, "statuspoll");
+        //     }
+        // });
 
-        var statusemitter_volume_level = pollingtoevent(function(done) {
-            that.getVolumeLevel(function(error, response) {
-                done(error, response, that.set_attempt);
-            }, "statuspoll");
-        }, {
-            longpolling: true,
-            interval: that.interval * 1000,
-            longpollEventName: "statuspoll_volumeLevel"
-        });
+        // var statusemitter_volume_level = pollingtoevent(function(done) {
+        //     that.getVolumeLevel(function(error, response) {
+        //         done(error, response, that.set_attempt);
+        //     }, "statuspoll");
+        // }, {
+        //     longpolling: true,
+        //     interval: that.interval * 1000,
+        //     longpollEventName: "statuspoll_volumeLevel"
+        // });
 
-        statusemitter.on("statuspoll_volumeLevel", function(data) {
-            that.state_volumeLevel = data;
-            if (that.VolumeService) {
-                that.VolumeService.getCharacteristic(Characteristic.Brightness).setValue(that.state_volumeLevel, null, "statuspoll");
-            }
-        });
+        // statusemitter.on("statuspoll_volumeLevel", function(data) {
+        //     that.state_volumeLevel = data;
+        //     if (that.VolumeService) {
+        //         that.VolumeService.getCharacteristic(Characteristic.Brightness).setValue(that.state_volumeLevel, null, "statuspoll");
+        //     }
+        // });
 
         if (this.has_ambilight) {
             var statusemitter_ambilight = pollingtoevent(function(done) {
@@ -818,23 +818,7 @@ HttpStatusAccessory.prototype = {
                 	this.log('Source - succeeded - current state: %s', inputState);
 
 					setTimeout(function () {
-					body = JSON.stringify({"key": "CursorDown"});
-
-					this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
-						if (error) {
-           				     this.log('setNextInput - error: ', error.message);
-						} else {
-								this.log('Down - succeeded - current state: %s', inputState);
-								setTimeout(function () {
-								body = JSON.stringify({"key": "CursorRight"});
-
-								this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
-									if (error) {
-               							 this.log('setNextInput - error: ', error.message);
-									} else {
-											this.log('Right - succeeded - current state: %s', inputState);
-											setTimeout(function() {
-												body = JSON.stringify({"key": "Confirm"});
+					                        body = JSON.stringify({"key": "Confirm"});
 
 												this.httpRequest(url, body, "POST", this.need_authentication, function(error, response, responseBody) {
 													if (error) {
@@ -843,15 +827,7 @@ HttpStatusAccessory.prototype = {
 															this.log.info("Source change completed");
 													}
 												}.bind(this));
-											}.bind(this), 500);
-									}
-								}.bind(this));
-
-							}.bind(this), 500);
-						}
-					}.bind(this));
-
-				}.bind(this), 500);
+											}.bind(this), 1000);
             }
         }.bind(this));
         callback(null, null);
@@ -938,27 +914,27 @@ HttpStatusAccessory.prototype = {
             .on('get', this.getPowerState.bind(this))
             .on('set', this.setPowerState.bind(this));
 
-        // Volume
-        this.volumeService = new Service.Lightbulb(this.name + " Volume", '0b');
-        this.volumeService
-            .getCharacteristic(Characteristic.On)
-            .on('get', this.getVolumeState.bind(this))
-            .on('set', this.setVolumeState.bind(this));
+        // // Volume
+        // this.volumeService = new Service.Lightbulb(this.name + " Volume", '0b');
+        // this.volumeService
+        //     .getCharacteristic(Characteristic.On)
+        //     .on('get', this.getVolumeState.bind(this))
+        //     .on('set', this.setVolumeState.bind(this));
 
-        this.volumeService
-            .getCharacteristic(Characteristic.Brightness)
-            .on('get', this.getVolumeLevel.bind(this))
-            .on('set', this.setVolumeLevel.bind(this));
+        // this.volumeService
+        //     .getCharacteristic(Characteristic.Brightness)
+        //     .on('get', this.getVolumeLevel.bind(this))
+        //     .on('set', this.setVolumeLevel.bind(this));
 
-        // Previous input
-        this.PreviousInputService = new Service.Switch(this.name + " Previous input", '0c');
-        this.PreviousInputService
-            .getCharacteristic(Characteristic.On)
-            .on('get', this.getPreviousInput.bind(this))
-            .on('set', this.setPreviousInput.bind(this));
+        // // Previous input
+        // this.PreviousInputService = new Service.Switch(this.name + " Previous input", '0c');
+        // this.PreviousInputService
+        //     .getCharacteristic(Characteristic.On)
+        //     .on('get', this.getPreviousInput.bind(this))
+        //     .on('set', this.setPreviousInput.bind(this));
 
         // Next input
-        this.NextInputService = new Service.Switch(this.name + " Next input", '0d');
+        this.NextInputService = new Service.Switch(this.name + " Input", '0d');
         this.NextInputService
             .getCharacteristic(Characteristic.On)
             .on('get', this.getNextInput.bind(this))
@@ -977,9 +953,9 @@ HttpStatusAccessory.prototype = {
             	.on('get', this.getAmbilightBrightness.bind(this))
             	.on('set', this.setAmbilightBrightness.bind(this));
 
-            return [informationService, this.switchService, this.volumeService, this.NextInputService, this.PreviousInputService, this.ambilightService];
+            return [informationService, this.switchService/*, this.volumeService*/, this.NextInputService/*, this.PreviousInputService*/, this.ambilightService];
         } else {
-            return [informationService, this.switchService, this.NextInputService, this.PreviousInputService, this.volumeService];
+            return [informationService, this.switchService, this.NextInputService/*, this.PreviousInputService, this.volumeService*/];
         }
     }
 };
